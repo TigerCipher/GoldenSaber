@@ -21,10 +21,21 @@
 //
 // ------------------------------------------------------------------------------
 
-#include <cstdio>
+
+#include "Game.h"
+#include "Window.h"
+
+
+
+using namespace saber;
 
 int main(int argc, char* argv[])
 {
-    printf("Hello world\n");
+    window::create(1280, 720, "GoldenSaber", false);
+
+    game::run();
+
+    window::shutdown();
+
     return 0;
 }
