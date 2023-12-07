@@ -35,6 +35,31 @@ SDL_Window*   window  = nullptr;
 SDL_GLContext context = nullptr;
 u32           window_width{};
 u32           window_height{};
+
+void GLAPIENTRY debug_callback(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar* message,
+                               const void* userParam)
+{
+    printf("OpenGL Debug Message: %s\n", message);
+}
+
+
+void print_supported_resolutions()
+{
+    const i32 num_displays = SDL_GetNumVideoDisplays();
+    for (i32 i = 0; i < num_displays; ++i)
+    {
+        printf("Display %d:\n", i);
+
+        const i32 num_modes = SDL_GetNumDisplayModes(i);
+        for (i32 j = 0; j < num_modes; ++j)
+        {
+            SDL_DisplayMode dm;
+            SDL_GetDisplayMode(i, j, &dm);
+            printf("Mode %d: %dx%d\n", j, dm.w, dm.h);
+        }
+
+    }
+}
 } // anonymous namespace
 
 bool create(u32 width, u32 height, const char* title, bool fullscreen)
@@ -58,6 +83,9 @@ bool create(u32 width, u32 height, const char* title, bool fullscreen)
     SDL_GL_SetAttribute(SDL_GL_ALPHA_SIZE, 8);
     SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
     SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
+    SDL_GL_SetAttribute(SDL_GL_ACCELERATED_VISUAL, 1); // Enable hardware acceleration
+
+    SDL_GL_SetSwapInterval(1); // Enable vsync TODO: Make this a setting
 
     window =
         SDL_CreateWindow(title, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, (i32) width, (i32) height, SDL_WINDOW_OPENGL);
@@ -85,7 +113,11 @@ bool create(u32 width, u32 height, const char* title, bool fullscreen)
         return false;
     }
 
-    // TODO: Debug callback
+#ifdef _DEBUG
+    glEnable(GL_DEBUG_OUTPUT);
+    glDebugMessageCallback(debug_callback, nullptr);
+    print_supported_resolutions();
+#endif
 
     return true;
 }
@@ -105,7 +137,18 @@ void toggle_fullscreen()
 {
     constexpr u32 fsflag       = SDL_WINDOW_FULLSCREEN;
     const bool    isfullscreen = SDL_GetWindowFlags(window) & fsflag;
-    SDL_SetWindowFullscreen(window, isfullscreen ? 0 : fsflag);
+
+    if (isfullscreen)
+    {
+        SDL_SetWindowSize(window, (i32) window_width, (i32) window_height);
+        SDL_SetWindowFullscreen(window, 0);
+    } else
+    {
+        SDL_DisplayMode dm;
+        SDL_GetDesktopDisplayMode(0, &dm);
+        SDL_SetWindowSize(window, dm.w, dm.h);
+        SDL_SetWindowFullscreen(window, fsflag);
+    }
     SDL_ShowCursor(isfullscreen);
 }
 
