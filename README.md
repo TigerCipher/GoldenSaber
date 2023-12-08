@@ -6,5 +6,5 @@ Long story short, Golden Saber is not a game engine. It's a game inspired by Pok
 ## Requirements
 more detailed instructions will come if this project ever becomes more than just myself working on it
 - vcpkg
-- SDL2 and GLEW installed via vcpkg
+- SDL2, GLEW, stb_image installed via vcpkg
 - SPIRV-Cross available on PATH (specifically glslangValidator)

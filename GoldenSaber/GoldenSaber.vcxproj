@@ -105,6 +105,7 @@
     <ClCompile Include="src\Game.cpp" />
     <ClCompile Include="src\Graphics\Camera.cpp" />
     <ClCompile Include="src\Graphics\Shader.cpp" />
+    <ClCompile Include="src\Graphics\Texture.cpp" />
     <ClCompile Include="src\Main.cpp" />
     <ClCompile Include="src\Util\Logger.cpp" />
     <ClCompile Include="src\Window.cpp" />
@@ -114,6 +115,7 @@
     <ClInclude Include="src\Game.h" />
     <ClInclude Include="src\Graphics\Camera.h" />
     <ClInclude Include="src\Graphics\Shader.h" />
+    <ClInclude Include="src\Graphics\Texture.h" />
     <ClInclude Include="src\Types.h" />
     <ClInclude Include="src\Util\Logger.h" />
     <ClInclude Include="src\Window.h" />

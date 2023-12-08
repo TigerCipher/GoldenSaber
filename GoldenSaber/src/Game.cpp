@@ -29,12 +29,46 @@
 
 #include "Graphics/Shader.h"
 #include "Graphics/Camera.h"
+#include "Graphics/Texture.h"
 
 namespace saber::game
 {
 
 namespace
 {
+
+ref<texture> basictiles{};
+
+void render_quad(const sprite& spr)
+{
+    GLuint vao, vbo;
+    glGenVertexArrays(1, &vao);
+    glGenBuffers(1, &vbo);
+
+    f32 vertices[] = {
+        -100.f, -100.f, 0.0f, spr.left(), spr.bottom(), // Bottom-left
+        100.f,  -100.f, 0.0f, spr.right(), spr.bottom(), // Bottom-right
+        100.f,  100.f, 0.0f, spr.right(), spr.top(), // Top-right
+        -100.f, 100.f, 0.0f, spr.left(), spr.top(), // Top-left
+    };
+
+    glBindVertexArray(vao);
+
+    glBindBuffer(GL_ARRAY_BUFFER, vbo);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(f32), nullptr);
+    glEnableVertexAttribArray(0);
+
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(f32), (void*)(3 * sizeof(f32)));
+    glEnableVertexAttribArray(1);
+
+    glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
+
+    glBindVertexArray(0);
+    glDeleteVertexArrays(1, &vao);
+    glDeleteBuffers(1, &vbo);
+}
 
 void render_quad()
 {
@@ -43,10 +77,10 @@ void render_quad()
     glGenBuffers(1, &vbo);
 
     f32 vertices[] = {
-        -10.f, -10.f, 0.0f, // Bottom-left
-        10.f,  -10.f, 0.0f, // Bottom-right
-        10.f,  10.f, 0.0f, // Top-right
-        -10.f, 10.f, 0.0f // Top-left
+        -100.f, -100.f, 0.0f, 0, 1, // Bottom-left
+        100.f,  -100.f, 0.0f, 1, 1, // Bottom-right
+        100.f,  100.f,  0.0f, 1, 0,    // Top-right
+        -100.f, 100.f,  0.0f, 0, 0,    // Top-left
     };
 
     glBindVertexArray(vao);
@@ -54,8 +88,11 @@ void render_quad()
     glBindBuffer(GL_ARRAY_BUFFER, vbo);
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(f32), nullptr);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(f32), nullptr);
     glEnableVertexAttribArray(0);
+
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(f32), (void*) (3 * sizeof(f32)));
+    glEnableVertexAttribArray(1);
 
     glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
 
@@ -78,6 +115,9 @@ void run()
     {
         return;
     }
+
+    basictiles = create_ref<texture>("./assets/sprites/basictiles.png");
+    sprite spr(basictiles, 1, 0, 16, 16);
 
     bool running = true;
     while (running)
@@ -106,11 +146,14 @@ void run()
         glClear(GL_COLOR_BUFFER_BIT);
 
         shader.bind();
-        constexpr f32 color[4] = { 1.0f, 0.0f, 0.0f, 1.0f };
+        constexpr f32 color[4] = { 1.0f, 1.0f, 1.0f, 1.0f };
         shader.set_uniform("uTint", color, 4);
         shader.set_matrix("uProjView", cam.projection_view());
+        spr.bind();
+        render_quad(spr);
 
-        render_quad();
+        //basictiles->bind();
+        //render_quad();
 
         window::present();
     }
