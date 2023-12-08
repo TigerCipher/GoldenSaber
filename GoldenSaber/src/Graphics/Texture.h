@@ -31,7 +31,6 @@ class texture
 {
 public:
     texture(const std::string& path);
-    texture(u32 width, u32 height);
     ~texture();
 
     void bind(u32 slot = 0) const;

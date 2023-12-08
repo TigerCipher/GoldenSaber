@@ -73,22 +73,6 @@ texture::texture(const std::string& path)
     }
 }
 
-texture::texture(u32 width, u32 height)
-{
-    m_width  = width;
-    m_height = height;
-
-    m_internal_format = GL_RGBA8;
-    m_format          = GL_RGBA;
-
-    glCreateTextures(GL_TEXTURE_2D, 1, &m_id);
-    glTextureStorage2D(m_id, 1, m_internal_format, m_width, m_height);
-
-    glTextureParameteri(m_id, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTextureParameteri(m_id, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-    glTextureParameteri(m_id, GL_TEXTURE_WRAP_S, GL_REPEAT);
-    glTextureParameteri(m_id, GL_TEXTURE_WRAP_T, GL_REPEAT);
-}
 
 texture::~texture()
 {
@@ -102,9 +86,9 @@ void texture::bind(u32 slot) const
 
 sprite::sprite(const ref<texture>& tex, u32 x, u32 y, u32 width, u32 height) : m_texture(tex)
 {
-    m_left   = (f32) x * (f32)width / (f32) tex->width();
+    m_left   = (f32) x * (f32) width / (f32) tex->width();
     m_right  = (f32) (x * width + width) / (f32) tex->width();
-    m_top    = (f32) y * (f32)height / (f32) tex->height();
+    m_top    = (f32) y * (f32) height / (f32) tex->height();
     m_bottom = (f32) (y * height + height) / (f32) tex->height();
 }
 

@@ -46,10 +46,10 @@ void render_quad(const sprite& spr)
     glGenBuffers(1, &vbo);
 
     f32 vertices[] = {
-        -100.f, -100.f, 0.0f, spr.left(), spr.bottom(), // Bottom-left
-        100.f,  -100.f, 0.0f, spr.right(), spr.bottom(), // Bottom-right
-        100.f,  100.f, 0.0f, spr.right(), spr.top(), // Top-right
-        -100.f, 100.f, 0.0f, spr.left(), spr.top(), // Top-left
+        -0.5f, -0.5f, 0.0f, spr.left(), spr.bottom(), // Bottom-left
+        0.5f,  -0.5f, 0.0f, spr.right(), spr.bottom(), // Bottom-right
+        0.5f,  0.5f, 0.0f, spr.right(), spr.top(), // Top-right
+        -0.5f, 0.5f, 0.0f, spr.left(), spr.top(), // Top-left
     };
 
     glBindVertexArray(vao);
@@ -105,11 +105,9 @@ void render_quad()
 
 void run()
 {
-    f32 left = (f32)window::width() / -2.0f;
-    f32 right = (f32)window::width() / 2.0f;
-    f32 bottom = (f32)window::height() / -2.0f;
-    f32 top = (f32)window::height() / 2.0f;
-    camera cam{left, right, bottom, top};
+    f32 aspect_ratio = (f32) window::width() / (f32) window::height();
+    f32 ortho_size = 10.f;
+    camera cam{-ortho_size * aspect_ratio, ortho_size * aspect_ratio, -ortho_size, ortho_size};
     shader shader("basic");
     if (!shader.load())
     {

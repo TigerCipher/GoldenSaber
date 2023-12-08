@@ -32,7 +32,7 @@ using namespace saber;
 
 int main(int argc, char* argv[])
 {
-    window::create(1280, 720, "GoldenSaber", false);
+    window::create(1920, 1080, "GoldenSaber", false);
 
     game::run();
 
