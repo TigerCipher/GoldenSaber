@@ -5,6 +5,14 @@ VisualStudioVersion = 17.7.34009.444
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GoldenSaber", "GoldenSaber\GoldenSaber.vcxproj", "{E9308897-B0FB-4C33-B596-DF38AD364E25}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Misc", "Misc", "{28B32D9A-FE22-44C1-AAE7-C23B1E5F7F1F}"
+	ProjectSection(SolutionItems) = preProject
+		.clang-format = .clang-format
+		.gitignore = .gitignore
+		compile_shaders.bat = compile_shaders.bat
+		README.md = README.md
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
