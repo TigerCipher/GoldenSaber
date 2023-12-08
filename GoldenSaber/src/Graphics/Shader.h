@@ -22,7 +22,7 @@
 // ------------------------------------------------------------------------------
 #pragma once
 
-#include "Types.h"
+#include "Common.h"
 
 
 #include <string>

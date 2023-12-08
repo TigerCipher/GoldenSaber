@@ -44,7 +44,7 @@ void GLAPIENTRY debug_callback(GLenum source, GLenum type, GLuint id, GLenum sev
 {
     if (type == GL_DEBUG_TYPE_ERROR)
     {
-        printf("OpenGL Debug Message: %s\n", message);
+        LOG_ERROR("OpenGL Error Message: {}", message);
     }
 }
 
@@ -65,6 +65,7 @@ void collect_supported_resolutions()
 
 bool create(i32 width, i32 height, const char* title, bool fullscreen)
 {
+    LOG_INFO("Creating window");
     windowed_res.width  = width;
     windowed_res.height = height;
 
@@ -95,7 +96,7 @@ bool create(i32 width, i32 height, const char* title, bool fullscreen)
 
     if (!window)
     {
-        printf("Failed to create window: %s\n", SDL_GetError());
+        LOG_ERROR("Failed to create window: {}", SDL_GetError());
         return false;
     }
 
@@ -103,7 +104,7 @@ bool create(i32 width, i32 height, const char* title, bool fullscreen)
 
     if (!context)
     {
-        printf("Failed to create OpenGL context: %s\n", SDL_GetError());
+        LOG_ERROR("Failed to create OpenGL context: {}", SDL_GetError());
         return false;
     }
 
@@ -112,7 +113,7 @@ bool create(i32 width, i32 height, const char* title, bool fullscreen)
     glewExperimental = GL_TRUE; // Needed for core profile
     if (glewInit() != GLEW_OK)
     {
-        printf("Failed to initialize GLEW\n");
+        LOG_ERROR("Failed to initialize GLEW");
         return false;
     }
 
@@ -125,13 +126,14 @@ bool create(i32 width, i32 height, const char* title, bool fullscreen)
 
     for (const auto& [w, h] : resolutions)
     {
-        printf("Supported resolution: %dx%d\n", w, h);
+        LOG_DEBUG("Supported resolution: {}x{}", w, h);
     }
 #endif
 
 
     SDL_SetWindowBordered(window, SDL_FALSE);
 
+    LOG_INFO("Done.");
     return true;
 }
 void shutdown()

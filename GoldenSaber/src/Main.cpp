@@ -26,8 +26,9 @@
 #include "Window.h"
 
 
-
 using namespace saber;
+
+#if (defined(_DEBUG) && defined(_WIN32)) || (!defined(_DEBUG) && !defined(_WIN32))
 
 int main(int argc, char* argv[])
 {
@@ -39,3 +40,30 @@ int main(int argc, char* argv[])
 
     return 0;
 }
+
+
+#else
+
+    #ifdef _WIN32
+
+        #define WIN32_LEAN_AND_MEAN
+        #include <Windows.h>
+
+// Windows entry point
+int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
+{
+    window::create(1280, 720, "GoldenSaber", false);
+
+    game::run();
+
+    window::shutdown();
+
+    return 0;
+}
+    #else
+        #error                                                                                                                   \
+            "This error should not be reached. If it is reached, then the project is in release build and trying to use the Windows entry point but is not a Windows operating system"
+    #endif
+
+
+#endif

@@ -41,10 +41,11 @@ u32 load_from_binary(const std::string& name, GLenum shader_type)
 
     if (!file.is_open())
     {
-        printf("Failed to open shader file: %s\n", name.c_str());
+        LOG_ERROR("Failed to open shader file: {}", name);
         return invalid_u32;
     }
 
+    LOG_INFO("Loading shader '{}.{}.spv'", name, shader_type == GL_FRAGMENT_SHADER ? "frag" : "vert");
     const size_t      filesize = file.tellg();
     std::vector<char> buffer(filesize);
     file.seekg(0);
@@ -61,11 +62,10 @@ u32 load_from_binary(const std::string& name, GLenum shader_type)
     {
         GLchar info_log[1024];
         glGetShaderInfoLog(id, sizeof(info_log), nullptr, info_log);
-        printf("Failed to compile shader: %s\n", info_log);
+        LOG_ERROR("Failed to compile shader: {}", info_log);
         glDeleteShader(id);
         return invalid_u32;
     }
-
     return id;
 }
 
@@ -73,6 +73,7 @@ u32 load_from_binary(const std::string& name, GLenum shader_type)
 
 shader::~shader()
 {
+    LOG_DEBUG("Deleting shader '{}'", m_name);
     glDeleteShader(m_vertex_shader);
     glDeleteShader(m_fragment_shader);
     glDeleteProgram(m_id);
@@ -80,6 +81,7 @@ shader::~shader()
 
 bool shader::load()
 {
+    LOG_INFO("Loading shader '{}'", m_name);
     m_vertex_shader   = load_from_binary(m_name, GL_VERTEX_SHADER);
     m_fragment_shader = load_from_binary(m_name, GL_FRAGMENT_SHADER);
 
@@ -99,10 +101,10 @@ bool shader::load()
     {
         GLchar info_log[1024];
         glGetProgramInfoLog(m_id, sizeof(info_log), nullptr, info_log);
-        printf("Failed to link shader: %s\n", info_log);
+        LOG_ERROR("Failed to link shader: {}", info_log);
         return false;
     }
-
+    LOG_INFO("Done.");
     return true;
 }
 
@@ -121,11 +123,11 @@ void shader::set_uniform(const std::string& name, const f32* data, u32 count) co
         case 2: glUniform2fv(location, 1, data); break;
         case 3: glUniform3fv(location, 1, data); break;
         case 4: glUniform4fv(location, 1, data); break;
-        default: printf("Invalid uniform count: %d\n", count); break;
+        default: LOG_ERROR("Invalid uniform count: {}", count); break;
         }
     } else
     {
-        printf("Failed to find uniform: %s\n", name.c_str());
+        LOG_ERROR("Failed to find uniform: {}", name);
     }
 }
 
