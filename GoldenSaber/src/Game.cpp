@@ -28,6 +28,7 @@
 #include <GL/glew.h>
 
 #include "Graphics/Shader.h"
+#include "Graphics/Camera.h"
 
 namespace saber::game
 {
@@ -42,10 +43,10 @@ void render_quad()
     glGenBuffers(1, &vbo);
 
     f32 vertices[] = {
-        -0.5f, -0.5f, 0.0f, // Bottom-left
-        0.5f,  -0.5f, 0.0f, // Bottom-right
-        0.5f,  0.5f, 0.0f, // Top-right
-        -0.5f, 0.5f, 0.0f // Top-left
+        -10.f, -10.f, 0.0f, // Bottom-left
+        10.f,  -10.f, 0.0f, // Bottom-right
+        10.f,  10.f, 0.0f, // Top-right
+        -10.f, 10.f, 0.0f // Top-left
     };
 
     glBindVertexArray(vao);
@@ -67,6 +68,11 @@ void render_quad()
 
 void run()
 {
+    f32 left = (f32)window::width() / -2.0f;
+    f32 right = (f32)window::width() / 2.0f;
+    f32 bottom = (f32)window::height() / -2.0f;
+    f32 top = (f32)window::height() / 2.0f;
+    camera cam{left, right, bottom, top};
     shader shader("basic");
     if (!shader.load())
     {
@@ -102,6 +108,7 @@ void run()
         shader.bind();
         constexpr f32 color[4] = { 1.0f, 0.0f, 0.0f, 1.0f };
         shader.set_uniform("uTint", color, 4);
+        shader.set_matrix("uProjView", cam.projection_view());
 
         render_quad();
 

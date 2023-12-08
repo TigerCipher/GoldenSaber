@@ -7,11 +7,14 @@ layout(location = 0) in vec3 aPosition;
 // Output vertex data: texture mapping
 //out vec2 vTexCoord;
 
+layout(location=0) uniform mat4 uProjView;
+
 // main
 void main()
 {
     // Set the vertex position
-    gl_Position = vec4(aPosition, 1.0);
+    // TODO: Get world matrix transformation
+    gl_Position = uProjView * vec4(aPosition, 1.0);
 
     // Set the texture coordinate
     //vTexCoord = aTexCoord;

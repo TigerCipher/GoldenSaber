@@ -131,4 +131,15 @@ void shader::set_uniform(const std::string& name, const f32* data, u32 count) co
     }
 }
 
+void shader::set_matrix(const std::string& name, const glm::mat4& matrix) const
+{
+    if (const GLint location = glGetUniformLocation(m_id, name.c_str()); location != -1)
+    {
+        glUniformMatrix4fv(location, 1, GL_FALSE, &matrix[0][0]);
+    } else
+    {
+        LOG_ERROR("Failed to find uniform: {}", name);
+    }
+}
+
 } // namespace saber

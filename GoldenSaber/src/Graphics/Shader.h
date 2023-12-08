@@ -26,6 +26,7 @@
 
 
 #include <string>
+#include <glm/glm.hpp>
 
 namespace saber
 {
@@ -41,6 +42,7 @@ public:
     void bind() const;
 
     void set_uniform(const std::string& name, const f32* data, u32 count) const;
+    void set_matrix(const std::string& name, const glm::mat4& matrix) const;
 
 private:
     u32 m_id{};
