@@ -33,8 +33,11 @@ namespace
 {
 SDL_Window*   window  = nullptr;
 SDL_GLContext context = nullptr;
-u32           window_width{};
-u32           window_height{};
+resolution    windowed_res{};
+resolution    fullscreen_res{};
+resolution    current_res{};
+
+std::set<resolution> resolutions{};
 
 void GLAPIENTRY debug_callback(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar* message,
                                const void* userParam)
@@ -43,29 +46,24 @@ void GLAPIENTRY debug_callback(GLenum source, GLenum type, GLuint id, GLenum sev
 }
 
 
-void print_supported_resolutions()
+void collect_supported_resolutions()
 {
-    const i32 num_displays = SDL_GetNumVideoDisplays();
-    for (i32 i = 0; i < num_displays; ++i)
+    const i32 display_index = SDL_GetWindowDisplayIndex(window);
+    const i32 num_modes     = SDL_GetNumDisplayModes(display_index);
+    for (i32 i = 0; i < num_modes; ++i)
     {
-        printf("Display %d:\n", i);
-
-        const i32 num_modes = SDL_GetNumDisplayModes(i);
-        for (i32 j = 0; j < num_modes; ++j)
-        {
-            SDL_DisplayMode dm;
-            SDL_GetDisplayMode(i, j, &dm);
-            printf("Mode %d: %dx%d\n", j, dm.w, dm.h);
-        }
-
+        SDL_DisplayMode dm;
+        SDL_GetDisplayMode(display_index, i, &dm);
+        resolutions.insert({ dm.w, dm.h });
     }
 }
+
 } // anonymous namespace
 
-bool create(u32 width, u32 height, const char* title, bool fullscreen)
+bool create(i32 width, i32 height, const char* title, bool fullscreen)
 {
-    window_width  = width;
-    window_height = height;
+    windowed_res.width  = width;
+    windowed_res.height = height;
 
     if (SDL_Init(SDL_INIT_VIDEO) != 0)
     {
@@ -87,10 +85,12 @@ bool create(u32 width, u32 height, const char* title, bool fullscreen)
 
     SDL_GL_SetSwapInterval(1); // Enable vsync TODO: Make this a setting
 
-    window =
-        SDL_CreateWindow(title, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, (i32) width, (i32) height, SDL_WINDOW_OPENGL);
+    // TODO: Get settings file, if exists get fullscreen and size settings from it
 
-    if (window == nullptr)
+    current_res = windowed_res;
+    window      = SDL_CreateWindow(title, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, width, height, SDL_WINDOW_OPENGL);
+
+    if (!window)
     {
         printf("Failed to create window: %s\n", SDL_GetError());
         return false;
@@ -98,7 +98,7 @@ bool create(u32 width, u32 height, const char* title, bool fullscreen)
 
     context = SDL_GL_CreateContext(window);
 
-    if (context == nullptr)
+    if (!context)
     {
         printf("Failed to create OpenGL context: %s\n", SDL_GetError());
         return false;
@@ -113,11 +113,21 @@ bool create(u32 width, u32 height, const char* title, bool fullscreen)
         return false;
     }
 
+    collect_supported_resolutions();
+    fullscreen_res = *resolutions.rbegin(); // TODO: Get fullscreen resolution from settings file
+
 #ifdef _DEBUG
     glEnable(GL_DEBUG_OUTPUT);
     glDebugMessageCallback(debug_callback, nullptr);
-    print_supported_resolutions();
+
+    for (const auto& [w, h] : resolutions)
+    {
+        printf("Supported resolution: %dx%d\n", w, h);
+    }
 #endif
+
+
+    SDL_SetWindowBordered(window, SDL_FALSE);
 
     return true;
 }
@@ -140,16 +150,35 @@ void toggle_fullscreen()
 
     if (isfullscreen)
     {
-        SDL_SetWindowSize(window, (i32) window_width, (i32) window_height);
+        current_res = windowed_res;
+        SDL_SetWindowSize(window, windowed_res.width, windowed_res.height);
         SDL_SetWindowFullscreen(window, 0);
     } else
     {
-        SDL_DisplayMode dm;
-        SDL_GetDesktopDisplayMode(0, &dm);
-        SDL_SetWindowSize(window, dm.w, dm.h);
-        SDL_SetWindowFullscreen(window, fsflag);
+        current_res = fullscreen_res;
+        SDL_SetWindowSize(window, fullscreen_res.width, fullscreen_res.height);
+        //SDL_SetWindowPosition(window, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED); // enough for borderless fullscreen?
+        SDL_SetWindowFullscreen(window, fsflag); // exclusive fullscreen
     }
-    SDL_ShowCursor(isfullscreen);
+    //SDL_ShowCursor(isfullscreen);
+}
+
+const std::set<resolution>& supported_resolutions()
+{
+    return resolutions;
+}
+
+resolution current_resolution()
+{
+    return current_res;
+}
+i32 width()
+{
+    return current_res.width;
+}
+i32 height()
+{
+    return current_res.height;
 }
 
 } // namespace saber::window

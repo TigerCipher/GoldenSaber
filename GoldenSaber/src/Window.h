@@ -25,15 +25,35 @@
 
 #include "Types.h"
 
+
+#include <set>
+
 namespace saber::window
 {
 
-bool create(u32 width, u32 height, const char* title, bool fullscreen);
+struct resolution
+{
+    i32  width;
+    i32  height;
+    bool operator<(const resolution& other) const
+    {
+        return width < other.width || (width == other.width && height < other.height);
+    }
+};
+
+bool create(i32 width, i32 height, const char* title, bool fullscreen);
 
 void shutdown();
 
 void present();
 
 void toggle_fullscreen();
+
+const std::set<resolution>& supported_resolutions();
+
+resolution current_resolution();
+
+i32 width();
+i32 height();
 
 } // namespace saber::window
