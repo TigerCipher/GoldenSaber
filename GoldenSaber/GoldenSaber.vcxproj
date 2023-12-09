@@ -104,9 +104,11 @@
   <ItemGroup>
     <ClCompile Include="src\Game.cpp" />
     <ClCompile Include="src\Graphics\Camera.cpp" />
+    <ClCompile Include="src\Graphics\Quad.cpp" />
     <ClCompile Include="src\Graphics\Shader.cpp" />
     <ClCompile Include="src\Graphics\Texture.cpp" />
     <ClCompile Include="src\Main.cpp" />
+    <ClCompile Include="src\Scene\Scene.cpp" />
     <ClCompile Include="src\Util\Logger.cpp" />
     <ClCompile Include="src\Window.cpp" />
   </ItemGroup>
@@ -114,8 +116,12 @@
     <ClInclude Include="src\Common.h" />
     <ClInclude Include="src\Game.h" />
     <ClInclude Include="src\Graphics\Camera.h" />
+    <ClInclude Include="src\Graphics\Quad.h" />
     <ClInclude Include="src\Graphics\Shader.h" />
     <ClInclude Include="src\Graphics\Texture.h" />
+    <ClInclude Include="src\Scene\Components.h" />
+    <ClInclude Include="src\Scene\Entity.h" />
+    <ClInclude Include="src\Scene\Scene.h" />
     <ClInclude Include="src\Types.h" />
     <ClInclude Include="src\Util\Logger.h" />
     <ClInclude Include="src\Window.h" />

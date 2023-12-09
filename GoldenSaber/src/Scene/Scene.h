@@ -15,8 +15,8 @@
 //     See the License for the specific language governing permissions and
 //     limitations under the License.
 //
-//  File Name: Window.h
-//  Date File Created: 12/07/2023
+//  File Name: Scene.h
+//  Date File Created: 12/09/2023
 //  Author: Matt
 //
 //  ------------------------------------------------------------------------------
@@ -24,38 +24,49 @@
 #pragma once
 
 #include "Common.h"
+#include "Graphics/Shader.h"
 
 
-#include <set>
+#include <entt/entt.hpp>
 
-namespace saber::window
+namespace saber
 {
 
-struct resolution
+class entity;
+
+class scene
 {
-    i32  width;
-    i32  height;
-    bool operator<(const resolution& other) const
+public:
+    scene() = default;
+    ~scene() = default;
+
+    entity create_entity();
+
+    void duplicate_entity(entity ent);
+    void destroy_entity(entity ent);
+
+    void on_start();
+    void on_stop();
+
+    void update(f32 delta);
+    void render(const shader& shader);
+
+    void destroy_all();
+
+    template<typename... Components>
+    auto get_all_entities()
     {
-        return width < other.width || (width == other.width && height < other.height);
+        return m_registry.view<Components...>();
     }
+
+private:
+    template<typename T>
+    void on_component_added(entity ent, T& component);
+
+    entt::registry m_registry{};
+
+    friend class entity;
 };
 
-bool create(i32 width, i32 height, const char* title, bool fullscreen);
 
-void shutdown();
-
-void present();
-
-void toggle_fullscreen();
-
-const std::set<resolution>& supported_resolutions();
-
-resolution current_resolution();
-
-void set_resolution(const resolution& res);
-
-i32 width();
-i32 height();
-
-} // namespace saber::window
+}

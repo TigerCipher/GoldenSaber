@@ -30,6 +30,9 @@
 #include "Graphics/Shader.h"
 #include "Graphics/Camera.h"
 #include "Graphics/Texture.h"
+#include "Graphics/Quad.h"
+#include "Scene/Scene.h"
+#include "Scene/Entity.h"
 
 namespace saber::game
 {
@@ -38,84 +41,57 @@ namespace
 {
 
 ref<texture> basictiles{};
-
-void render_quad(const sprite& spr)
-{
-    GLuint vao, vbo;
-    glGenVertexArrays(1, &vao);
-    glGenBuffers(1, &vbo);
-
-    f32 vertices[] = {
-        -0.5f, -0.5f, 0.0f, spr.left(), spr.bottom(), // Bottom-left
-        0.5f,  -0.5f, 0.0f, spr.right(), spr.bottom(), // Bottom-right
-        0.5f,  0.5f, 0.0f, spr.right(), spr.top(), // Top-right
-        -0.5f, 0.5f, 0.0f, spr.left(), spr.top(), // Top-left
-    };
-
-    glBindVertexArray(vao);
-
-    glBindBuffer(GL_ARRAY_BUFFER, vbo);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(f32), nullptr);
-    glEnableVertexAttribArray(0);
-
-    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(f32), (void*)(3 * sizeof(f32)));
-    glEnableVertexAttribArray(1);
-
-    glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
-
-    glBindVertexArray(0);
-    glDeleteVertexArrays(1, &vao);
-    glDeleteBuffers(1, &vbo);
-}
-
-void render_quad()
-{
-    GLuint vao, vbo;
-    glGenVertexArrays(1, &vao);
-    glGenBuffers(1, &vbo);
-
-    f32 vertices[] = {
-        -100.f, -100.f, 0.0f, 0, 1, // Bottom-left
-        100.f,  -100.f, 0.0f, 1, 1, // Bottom-right
-        100.f,  100.f,  0.0f, 1, 0,    // Top-right
-        -100.f, 100.f,  0.0f, 0, 0,    // Top-left
-    };
-
-    glBindVertexArray(vao);
-
-    glBindBuffer(GL_ARRAY_BUFFER, vbo);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(f32), nullptr);
-    glEnableVertexAttribArray(0);
-
-    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(f32), (void*) (3 * sizeof(f32)));
-    glEnableVertexAttribArray(1);
-
-    glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
-
-    glBindVertexArray(0);
-    glDeleteVertexArrays(1, &vao);
-    glDeleteBuffers(1, &vbo);
-}
+ref<texture> characters{};
 
 } // anonymous namespace
 
 void run()
 {
-    f32 aspect_ratio = (f32) window::width() / (f32) window::height();
-    f32 ortho_size = 10.f;
-    camera cam{-ortho_size * aspect_ratio, ortho_size * aspect_ratio, -ortho_size, ortho_size};
-    shader shader("basic");
+    f32           aspect_ratio = (f32) window::width() / (f32) window::height();
+    constexpr f32 ortho_size   = 10.f;
+    camera        cam{ -ortho_size * aspect_ratio, ortho_size * aspect_ratio, -ortho_size, ortho_size };
+    shader        shader("basic");
     if (!shader.load())
     {
         return;
     }
 
     basictiles = create_ref<texture>("./assets/sprites/basictiles.png");
-    sprite spr(basictiles, 1, 0, 16, 16);
+    characters = create_ref<texture>("./assets/sprites/characters.png");
+
+    sprite_component spr{};
+    spr.sprite = sprite{ basictiles, 1, 0, 16, 16 };
+
+    scene main_scene{};
+    //entity ent = main_scene.create_entity();
+    //ent.add_component<sprite_component>(spr);
+
+    sprite_component spr2;
+    spr2.sprite   = sprite{ characters, 0, 0, 16, 16 };
+    entity player = main_scene.create_entity();
+    player.add_component<sprite_component>(spr2);
+
+    f32 x = -20.f;
+    f32 y = -10.f;
+    for (u32 i = 0; i < 21; ++i)
+    {
+        for (u32 j = 0; j < 40; ++j)
+        {
+            entity ent = main_scene.create_entity();
+            ent.add_component<sprite_component>(spr);
+            ent.get_component<transform_component>().translation = { x, y };
+            x += 1.f;
+        }
+        x = -20.f;
+        y += 1.f;
+    }
+
+
+    //ent.get_component<transform_component>().rotation = glm::radians(45.f);
+    //sprite spr(basictiles, 1, 0, 16, 16);
+
+    //quad tile{spr};
+    //tile.create();
 
     bool running = true;
     while (running)
@@ -138,6 +114,20 @@ void run()
                     window::toggle_fullscreen();
                 }
             }
+            if (event.type == SDL_WINDOWEVENT)
+            {
+                if (event.window.event == SDL_WINDOWEVENT_RESIZED)
+                {
+                    if (window::width() != event.window.data1 || window::height() != event.window.data2)
+                    {
+                        window::set_resolution({ event.window.data1, event.window.data2 });
+                    }
+
+                    aspect_ratio = (f32) window::width() / (f32) window::height();
+                    cam.set_projection(-ortho_size * aspect_ratio, ortho_size * aspect_ratio, -ortho_size, ortho_size);
+                    glViewport(0, 0, event.window.data1, event.window.data2);
+                }
+            }
         }
 
         glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
@@ -147,8 +137,11 @@ void run()
         constexpr f32 color[4] = { 1.0f, 1.0f, 1.0f, 1.0f };
         shader.set_uniform("uTint", color, 4);
         shader.set_matrix("uProjView", cam.projection_view());
-        spr.bind();
-        render_quad(spr);
+
+        main_scene.render(shader);
+        //spr.bind();
+
+        //tile.draw();
 
         //basictiles->bind();
         //render_quad();

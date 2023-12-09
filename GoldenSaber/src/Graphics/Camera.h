@@ -50,11 +50,11 @@ public:
     constexpr const glm::vec3& position() const { return m_position; }
     constexpr f32              rotation() const { return m_rotation; }
 
-private:
     void recalculate_view_matrix();
 
+private:
     glm::mat4 m_projection{};
-    glm::mat4 m_view{1.0f};
+    glm::mat4 m_view{ 1.0f };
     glm::mat4 m_projection_view{};
 
     glm::vec3 m_position{};

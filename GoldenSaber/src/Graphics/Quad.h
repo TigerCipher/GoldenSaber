@@ -15,8 +15,8 @@
 //     See the License for the specific language governing permissions and
 //     limitations under the License.
 //
-//  File Name: Window.h
-//  Date File Created: 12/07/2023
+//  File Name: Quad.h
+//  Date File Created: 12/09/2023
 //  Author: Matt
 //
 //  ------------------------------------------------------------------------------
@@ -24,38 +24,28 @@
 #pragma once
 
 #include "Common.h"
+#include "Texture.h"
 
+#include <vector>
 
-#include <set>
-
-namespace saber::window
+namespace saber
 {
 
-struct resolution
+class quad
 {
-    i32  width;
-    i32  height;
-    bool operator<(const resolution& other) const
-    {
-        return width < other.width || (width == other.width && height < other.height);
-    }
+public:
+    quad();
+    quad(const sprite& spr);
+    ~quad();
+
+    void create();
+
+    void draw() const;
+private:
+    u32 m_vao{};
+    u32 m_vbo{};
+
+    std::vector<f32> m_vertices{};
 };
 
-bool create(i32 width, i32 height, const char* title, bool fullscreen);
-
-void shutdown();
-
-void present();
-
-void toggle_fullscreen();
-
-const std::set<resolution>& supported_resolutions();
-
-resolution current_resolution();
-
-void set_resolution(const resolution& res);
-
-i32 width();
-i32 height();
-
-} // namespace saber::window
+}

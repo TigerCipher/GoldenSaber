@@ -131,7 +131,8 @@ bool create(i32 width, i32 height, const char* title, bool fullscreen)
 #endif
 
 
-    SDL_SetWindowBordered(window, SDL_FALSE);
+    //SDL_SetWindowBordered(window, SDL_FALSE);
+    SDL_SetWindowResizable(window, SDL_TRUE);
 
     LOG_INFO("Done.");
     return true;
@@ -160,8 +161,17 @@ void toggle_fullscreen()
         SDL_SetWindowFullscreen(window, 0);
     } else
     {
+        // temp while trying to fix window resizing
         current_res = fullscreen_res;
         SDL_SetWindowSize(window, fullscreen_res.width, fullscreen_res.height);
+
+        SDL_Event resizeEvent;
+        resizeEvent.type         = SDL_WINDOWEVENT;
+        resizeEvent.window.event = SDL_WINDOWEVENT_RESIZED;
+        resizeEvent.window.data1 = fullscreen_res.width;
+        resizeEvent.window.data2 = fullscreen_res.height;
+        SDL_PushEvent(&resizeEvent);
+
         //SDL_SetWindowPosition(window, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED); // enough for borderless fullscreen?
         SDL_SetWindowFullscreen(window, fsflag); // exclusive fullscreen
     }
@@ -177,6 +187,12 @@ resolution current_resolution()
 {
     return current_res;
 }
+
+void set_resolution(const resolution& res)
+{
+    current_res = res;
+}
+
 i32 width()
 {
     return current_res.width;

@@ -6,12 +6,13 @@ layout(location = 1) in vec2 aTexCoord;
 
 
 layout(location=0) uniform mat4 uProjView;
+layout(location=1) uniform mat4 uModel;
 
 layout(location=0)out vec2 oTexCoord;
 
 void main()
 {
-    // TODO: Get world matrix transformation
-    gl_Position = uProjView * vec4(aPosition, 1.0);
+    vec4 model = uModel * vec4(aPosition, 1.0);
+    gl_Position = uProjView * model;
     oTexCoord = aTexCoord;
 }
