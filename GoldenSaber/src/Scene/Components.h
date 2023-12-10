@@ -23,7 +23,6 @@
 #pragma once
 
 #include "Common.h"
-#include "Graphics/Quad.h"
 #include "Graphics/Texture.h"
 
 
@@ -48,19 +47,14 @@ struct transform_component
 
 struct sprite_component
 {
-    sprite sprite;
+    ref<sprite> sprite;
 };
-
-//struct quad_component
-//{
-//    quad quad;
-//};
 
 
 
 template<typename... T>
 struct component_group {};
 
-using all_components = component_group<transform_component, sprite_component/*, quad_component*/>;
+using all_components = component_group<transform_component, sprite_component>;
 
 } // namespace saber

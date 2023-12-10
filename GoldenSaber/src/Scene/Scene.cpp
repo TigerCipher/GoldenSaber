@@ -24,6 +24,7 @@
 
 #include "Components.h"
 #include "Entity.h"
+#include "Graphics/Renderer.h"
 
 namespace saber
 {
@@ -80,17 +81,15 @@ void scene::update(f32 delta)
     // Physics
 }
 
-void scene::render(const shader& shader)
+void scene::render(const camera& cam)
 {
+    gfx::begin_scene(cam);
     for (const auto group = m_registry.group<transform_component>(entt::get<sprite_component>); const auto ent : group)
     {
         auto [trans, spr] = group.get<transform_component, sprite_component>(ent);
-        shader.set_matrix("uModel", trans.get_transformation());
-        quad q{ spr.sprite };
-        spr.sprite.bind();
-        q.create();
-        q.draw();
+        gfx::draw_sprite(spr.sprite, trans.get_transformation());
     }
+    gfx::end_scene();
 }
 
 void scene::destroy_all()

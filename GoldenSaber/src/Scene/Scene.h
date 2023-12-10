@@ -24,7 +24,7 @@
 #pragma once
 
 #include "Common.h"
-#include "Graphics/Shader.h"
+#include "Graphics/Camera.h"
 
 
 #include <entt/entt.hpp>
@@ -49,7 +49,7 @@ public:
     void on_stop();
 
     void update(f32 delta);
-    void render(const shader& shader);
+    void render(const camera& cam);
 
     void destroy_all();
 

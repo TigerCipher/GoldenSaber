@@ -30,9 +30,9 @@
 #include "Graphics/Shader.h"
 #include "Graphics/Camera.h"
 #include "Graphics/Texture.h"
-#include "Graphics/Quad.h"
 #include "Scene/Scene.h"
 #include "Scene/Entity.h"
+#include "Graphics/Renderer.h"
 
 namespace saber::game
 {
@@ -50,24 +50,21 @@ void run()
     f32           aspect_ratio = (f32) window::width() / (f32) window::height();
     constexpr f32 ortho_size   = 10.f;
     camera        cam{ -ortho_size * aspect_ratio, ortho_size * aspect_ratio, -ortho_size, ortho_size };
-    shader        shader("basic");
-    if (!shader.load())
-    {
-        return;
-    }
+    gfx::init();
 
     basictiles = create_ref<texture>("./assets/sprites/basictiles.png");
     characters = create_ref<texture>("./assets/sprites/characters.png");
 
     sprite_component spr{};
-    spr.sprite = sprite{ basictiles, 1, 0, 16, 16 };
+    spr.sprite = create_sprite_from_coords(basictiles, {1, 14}, {16, 16}); // TODO: Right now, 14 is the top of this sprite sheet because we have to flip the texture.
+    // Need to make it so that 0 is the top. Maybe when setting it, offset the y coord by something like tex.height / cell.height ?
 
     scene main_scene{};
     //entity ent = main_scene.create_entity();
     //ent.add_component<sprite_component>(spr);
 
     sprite_component spr2;
-    spr2.sprite   = sprite{ characters, 0, 0, 16, 16 };
+    spr2.sprite   = create_sprite_from_coords(characters, { 0, 7 }, { 16, 16 });
     entity player = main_scene.create_entity();
     player.add_component<sprite_component>(spr2);
 
@@ -133,12 +130,9 @@ void run()
         glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
-        shader.bind();
         constexpr f32 color[4] = { 1.0f, 1.0f, 1.0f, 1.0f };
-        shader.set_uniform("uTint", color, 4);
-        shader.set_matrix("uProjView", cam.projection_view());
 
-        main_scene.render(shader);
+        main_scene.render(cam);
         //spr.bind();
 
         //tile.draw();

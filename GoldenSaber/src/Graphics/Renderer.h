@@ -15,7 +15,7 @@
 //     See the License for the specific language governing permissions and
 //     limitations under the License.
 //
-//  File Name: Quad.h
+//  File Name: Renderer.h
 //  Date File Created: 12/09/2023
 //  Author: Matt
 //
@@ -24,28 +24,19 @@
 #pragma once
 
 #include "Common.h"
+
+#include "Camera.h"
+
 #include "Texture.h"
 
-#include <vector>
-
-namespace saber
+namespace saber::gfx
 {
 
-class quad
-{
-public:
-    quad();
-    quad(const sprite& spr);
-    ~quad();
+void init();
+void shutdown();
 
-    void create();
+void begin_scene(const camera& cam);
+void end_scene();
 
-    void draw() const;
-private:
-    u32 m_vao{};
-    u32 m_vbo{};
-
-    std::vector<f32> m_vertices{};
-};
-
+void draw_sprite(const ref<sprite>& spr, const glm::mat4& transform, const glm::vec4& tint_color = {1.f, 1.f, 1.f, 1.f});
 }

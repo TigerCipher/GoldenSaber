@@ -25,15 +25,20 @@
 
 #include "Common.h"
 
+
+#include <glm/glm.hpp>
+
 namespace saber
 {
 class texture
 {
 public:
     texture(const std::string& path);
+    texture(u32 width, u32 height);
     ~texture();
 
     void bind(u32 slot = 0) const;
+    void set_data(const void* data, u32 size) const;
 
     constexpr u32 width() const { return m_width; }
     constexpr u32 height() const { return m_height; }
@@ -54,23 +59,19 @@ private:
 class sprite
 {
 public:
-    sprite() = default;
-    sprite(const ref<texture>& tex, u32 x, u32 y, u32 width, u32 height);
+    sprite(const ref<texture>& tex, const glm::vec2& min, const glm::vec2& max);
     ~sprite() = default;
 
     void bind(u32 slot = 0) const;
 
-    constexpr f32 left() const { return m_left; }
-    constexpr f32 right() const { return m_right; }
-    constexpr f32 top() const { return m_top; }
-    constexpr f32 bottom() const { return m_bottom; }
+    constexpr const ref<texture>& get_texture() const { return m_texture; }
+    constexpr const glm::vec2* tex_coords() const { return m_texcoords; }
 
 private:
     ref<texture> m_texture{};
-    f32          m_left{};
-    f32          m_right{};
-    f32          m_top{};
-    f32          m_bottom{};
+    glm::vec2    m_texcoords[4];
 };
+
+ref<sprite> create_sprite_from_coords(const ref<texture>& texture, const glm::vec2& coords, const glm::vec2& cell_size, const glm::vec2& sprite_size = {1, 1});
 
 } // namespace saber

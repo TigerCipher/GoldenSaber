@@ -22,6 +22,7 @@
 //  ------------------------------------------------------------------------------
 #include "Texture.h"
 
+#include <cassert>
 #include <stb_image.h>
 #include <GL/glew.h>
 
@@ -33,7 +34,7 @@ texture::texture(const std::string& path)
     LOG_INFO("Loading texture from '{}'", path);
 
     i32 w, h, channels;
-    //stbi_set_flip_vertically_on_load(1);
+    stbi_set_flip_vertically_on_load(1);
     u8* data = stbi_load(path.c_str(), &w, &h, &channels, 0);
 
     if (data)
@@ -55,14 +56,15 @@ texture::texture(const std::string& path)
         m_internal_format = internal_format;
         m_format          = data_format;
 
-        glGenTextures(1, &m_id);
-        glBindTexture(GL_TEXTURE_2D, m_id);
-        glTexImage2D(GL_TEXTURE_2D, 0, internal_format, m_width, m_height, 0, data_format, GL_UNSIGNED_BYTE, data);
+        glCreateTextures(GL_TEXTURE_2D, 1, &m_id);
+        glTextureStorage2D(m_id, 1, internal_format, m_width, m_height);
 
         glTextureParameteri(m_id, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
         glTextureParameteri(m_id, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
         glTextureParameteri(m_id, GL_TEXTURE_WRAP_S, GL_REPEAT);
         glTextureParameteri(m_id, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+        glTextureSubImage2D(m_id, 0, 0, 0, m_width, m_height, data_format, GL_UNSIGNED_BYTE, data);
 
 
         stbi_image_free(data);
@@ -73,6 +75,22 @@ texture::texture(const std::string& path)
     }
 }
 
+texture::texture(u32 width, u32 height)
+{
+    m_width           = (i32) width;
+    m_height          = (i32) height;
+    m_internal_format = GL_RGBA8;
+    m_format          = GL_RGBA;
+
+    glCreateTextures(GL_TEXTURE_2D, 1, &m_id);
+    glTextureStorage2D(m_id, 1, m_internal_format, m_width, m_height);
+
+    glTextureParameteri(m_id, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTextureParameteri(m_id, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTextureParameteri(m_id, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTextureParameteri(m_id, GL_TEXTURE_WRAP_T, GL_REPEAT);
+}
+
 
 texture::~texture()
 {
@@ -81,15 +99,23 @@ texture::~texture()
 
 void texture::bind(u32 slot) const
 {
-    glBindTexture(GL_TEXTURE_2D, m_id);
+    glBindTextureUnit(slot, m_id);
 }
 
-sprite::sprite(const ref<texture>& tex, u32 x, u32 y, u32 width, u32 height) : m_texture(tex)
+void texture::set_data(const void* data, u32 size) const
 {
-    m_left   = (f32) x * (f32) width / (f32) tex->width();
-    m_right  = (f32) (x * width + width) / (f32) tex->width();
-    m_top    = (f32) y * (f32) height / (f32) tex->height();
-    m_bottom = (f32) (y * height + height) / (f32) tex->height();
+    assert((i32) size == m_width * m_height * (m_format == GL_RGBA ? 4 : 3) && "Data must contain entire texture");
+    glTextureSubImage2D(m_id, 0, 0, 0, m_width, m_height, m_format, GL_UNSIGNED_BYTE, data);
+}
+
+
+sprite::sprite(const ref<texture>& tex, const glm::vec2& min, const glm::vec2& max)
+{
+    m_texture      = tex;
+    m_texcoords[0] = { min.x, min.y };
+    m_texcoords[1] = { max.x, min.y };
+    m_texcoords[2] = { max.x, max.y };
+    m_texcoords[3] = { min.x, max.y };
 }
 
 void sprite::bind(u32 slot) const
@@ -99,5 +125,17 @@ void sprite::bind(u32 slot) const
         m_texture->bind(slot);
     }
 }
+
+
+ref<sprite> create_sprite_from_coords(const ref<texture>& texture, const glm::vec2& coords, const glm::vec2& cell_size,
+                                      const glm::vec2& sprite_size)
+{
+    glm::vec2 min = { (coords.x * cell_size.x) / (f32)texture->width(), (coords.y * cell_size.y) / (f32)texture->height() };
+    glm::vec2 max = { ((coords.x + sprite_size.x) * cell_size.x) / (f32)texture->width(),
+                      ((coords.y + sprite_size.y) * cell_size.y) / (f32)texture->height() };
+
+    return create_ref<sprite>(texture, min, max);
+}
+
 
 } // namespace saber
