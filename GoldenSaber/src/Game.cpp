@@ -56,15 +56,16 @@ void run()
     characters = create_ref<texture>("./assets/sprites/characters.png");
 
     sprite_component spr{};
-    spr.sprite = create_sprite_from_coords(basictiles, {1, 14}, {16, 16}); // TODO: Right now, 14 is the top of this sprite sheet because we have to flip the texture.
-    // Need to make it so that 0 is the top. Maybe when setting it, offset the y coord by something like tex.height / cell.height ?
+    //spr.sprite = create_sprite_from_coords(basictiles, {1, 14}, {16, 16});
+    spr.sprite = create_sprite_from_coords(basictiles, {1, 0}, {16, 16});
 
     scene main_scene{};
     //entity ent = main_scene.create_entity();
     //ent.add_component<sprite_component>(spr);
 
     sprite_component spr2;
-    spr2.sprite   = create_sprite_from_coords(characters, { 0, 7 }, { 16, 16 });
+    //spr2.sprite   = create_sprite_from_coords(characters, { 0, 7 }, { 16, 16 });
+    spr2.sprite   = create_sprite_from_coords(characters, { 3, 1 }, { 16, 16 });
     entity player = main_scene.create_entity();
     player.add_component<sprite_component>(spr2);
 

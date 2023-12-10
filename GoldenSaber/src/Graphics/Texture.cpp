@@ -130,9 +130,10 @@ void sprite::bind(u32 slot) const
 ref<sprite> create_sprite_from_coords(const ref<texture>& texture, const glm::vec2& coords, const glm::vec2& cell_size,
                                       const glm::vec2& sprite_size)
 {
-    glm::vec2 min = { (coords.x * cell_size.x) / (f32)texture->width(), (coords.y * cell_size.y) / (f32)texture->height() };
+    glm::vec2 min = { (coords.x * cell_size.x) / (f32) texture->width(),
+                      1.f - ((coords.y + sprite_size.y) * cell_size.y) / (f32) texture->height() };
     glm::vec2 max = { ((coords.x + sprite_size.x) * cell_size.x) / (f32)texture->width(),
-                      ((coords.y + sprite_size.y) * cell_size.y) / (f32)texture->height() };
+                      1.f - (coords.y * cell_size.y) / (f32)texture->height() };
 
     return create_ref<sprite>(texture, min, max);
 }
