@@ -13,16 +13,40 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Misc", "Misc", "{28B32D9A-F
 		README.md = README.md
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MapEditor", "MapEditor\MapEditor.csproj", "{B5B29394-E3E3-4BDE-8A75-8B4A29586C42}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
 		Debug|x64 = Debug|x64
+		DebugEditor|Any CPU = DebugEditor|Any CPU
+		DebugEditor|x64 = DebugEditor|x64
+		Release|Any CPU = Release|Any CPU
 		Release|x64 = Release|x64
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{E9308897-B0FB-4C33-B596-DF38AD364E25}.Debug|Any CPU.ActiveCfg = Debug|x64
+		{E9308897-B0FB-4C33-B596-DF38AD364E25}.Debug|Any CPU.Build.0 = Debug|x64
 		{E9308897-B0FB-4C33-B596-DF38AD364E25}.Debug|x64.ActiveCfg = Debug|x64
 		{E9308897-B0FB-4C33-B596-DF38AD364E25}.Debug|x64.Build.0 = Debug|x64
+		{E9308897-B0FB-4C33-B596-DF38AD364E25}.DebugEditor|Any CPU.ActiveCfg = DebugEditor|x64
+		{E9308897-B0FB-4C33-B596-DF38AD364E25}.DebugEditor|Any CPU.Build.0 = DebugEditor|x64
+		{E9308897-B0FB-4C33-B596-DF38AD364E25}.DebugEditor|x64.ActiveCfg = DebugEditor|x64
+		{E9308897-B0FB-4C33-B596-DF38AD364E25}.Release|Any CPU.ActiveCfg = Release|x64
+		{E9308897-B0FB-4C33-B596-DF38AD364E25}.Release|Any CPU.Build.0 = Release|x64
 		{E9308897-B0FB-4C33-B596-DF38AD364E25}.Release|x64.ActiveCfg = Release|x64
 		{E9308897-B0FB-4C33-B596-DF38AD364E25}.Release|x64.Build.0 = Release|x64
+		{B5B29394-E3E3-4BDE-8A75-8B4A29586C42}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B5B29394-E3E3-4BDE-8A75-8B4A29586C42}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B5B29394-E3E3-4BDE-8A75-8B4A29586C42}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{B5B29394-E3E3-4BDE-8A75-8B4A29586C42}.DebugEditor|Any CPU.ActiveCfg = DebugEditor|Any CPU
+		{B5B29394-E3E3-4BDE-8A75-8B4A29586C42}.DebugEditor|Any CPU.Build.0 = DebugEditor|Any CPU
+		{B5B29394-E3E3-4BDE-8A75-8B4A29586C42}.DebugEditor|x64.ActiveCfg = DebugEditor|Any CPU
+		{B5B29394-E3E3-4BDE-8A75-8B4A29586C42}.DebugEditor|x64.Build.0 = DebugEditor|Any CPU
+		{B5B29394-E3E3-4BDE-8A75-8B4A29586C42}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B5B29394-E3E3-4BDE-8A75-8B4A29586C42}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B5B29394-E3E3-4BDE-8A75-8B4A29586C42}.Release|x64.ActiveCfg = Release|Any CPU
+		{B5B29394-E3E3-4BDE-8A75-8B4A29586C42}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
